@@ -17,7 +17,7 @@ namespace GorillaGoSmallGorillaGoBig
     public class Plugin : BaseUnityPlugin
     {
         public bool IsEnabled;
-        public bool inRoom = true;
+        public bool inRoom = false;
         public GameObject SizeChanger;
         public Transform Parent;
 
