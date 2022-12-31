@@ -1,5 +1,6 @@
-﻿using BepInEx;
+using BepInEx;
 using System;
+using System.ComponentModel;
 using UnityEngine;
 using Utilla;
 
@@ -12,8 +13,8 @@ namespace GorillaGoSmallGorillaGoBig
     /* This attribute tells Utilla to look for [ModdedGameJoin] and [ModdedGameLeave] */
     [ModdedGamemode]
     [BepInDependency("org.legoandmars.gorillatag.utilla", "1.6.7")]
-    [BepInDependency("tonimacaroni.computerinterface", "1.5.4")]
     [BepInPlugin(PluginInfo.GUID, PluginInfo.Name, PluginInfo.Version)]
+    [Description("HauntedModMenu")]
     public class Plugin : BaseUnityPlugin
     {
         public bool IsEnabled;
@@ -47,6 +48,7 @@ namespace GorillaGoSmallGorillaGoBig
             HarmonyPatches.RemoveHarmonyPatches();
             SizeChanger.transform.localScale = new Vector3(0.3422f, 0.3422f, 0.3422f);
             IsEnabled = false;
+            SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
         }
 
         void OnGameInitialized(object sender, EventArgs e)
@@ -65,12 +67,12 @@ namespace GorillaGoSmallGorillaGoBig
         {
             /* Code here runs every frame when the mod is enabled */
 
-            if(IsEnabled == false)
+            if (IsEnabled == false)
             {
                 SizeChanger.transform.localScale = new Vector3(0.3422f, 0.3422f, 0.3422f);
             }
 
-            if(inRoom == true)
+            if (inRoom == true)
             {
                 SizeChanger.transform.localScale = new Vector3(999, 999, 999);
             }
