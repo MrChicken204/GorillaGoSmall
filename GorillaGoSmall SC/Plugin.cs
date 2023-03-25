@@ -85,14 +85,14 @@ namespace GorillaGoSmallGorillaGoBig
             list[0].TryGetFeatureValue(CommonUsages.secondaryButton, out BButton);
             list[0].TryGetFeatureValue(CommonUsages.primaryButton, out AButton);
 
-            if(AButton == true && BButton == false /*/&& inRoom == true/*/)
+            if(AButton == true && BButton == false && inRoom == true)
             {
                 SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(9999, 9999, 9999);
                 Player.GetComponent<SizeManager>().currentSizeLayerMaskValue = 1;
                 SizeChanger.GetComponent<SizeChanger>().minScale = 0.1f;
             }
 
-            if (AButton == false && BButton == true /*/&& inRoom == true/*/)
+            if (AButton == false && BButton == true && inRoom == true)
             {
                 SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(9999, 9999, 9999);
                 Player.GetComponent<SizeManager>().currentSizeLayerMaskValue = 2;
