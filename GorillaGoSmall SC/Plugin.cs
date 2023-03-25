@@ -8,6 +8,8 @@ using GorillaGoSmallGorillaGoBig.Scripts;
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.XR;
+using System.Linq;
+using Zenject.Asteroids;
 
 namespace GorillaGoSmallGorillaGoBig
 {
@@ -25,8 +27,11 @@ namespace GorillaGoSmallGorillaGoBig
         private bool BButton;
         private bool AButton;
         private GameObject Player;
-        private bool SizeDown;
+        private bool SizeDOWN;
         private float timer;
+        private bool GameOpened;
+        private float GameOpenedTimer;
+        private bool GameLoaded;
 
         internal void Start()
         {
@@ -52,7 +57,7 @@ namespace GorillaGoSmallGorillaGoBig
             {
                 SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
                 timer = 0.1f;
-                SizeDown = true;
+                SizeDOWN = true;
                 //ScaleChange.SetScale(1f, false);
             }
         }
@@ -61,16 +66,16 @@ namespace GorillaGoSmallGorillaGoBig
         {
             this.enabled = true;
             SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
-            SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(17.906f, 1.6123f, 18.0854f);
+            SizeChanger.transform.localScale = new Vector3(0, 0, 0);
             timer = 0.1f;
-            SizeDown = true;
+            SizeDOWN = true;
             HarmonyPatches.RemoveHarmonyPatches();
             IsEnabled = false;
         }
 
         private void OnGameInitialized(object sender, EventArgs e)
         {   //Hopefully Fixed
-            SizeDown = false;
+            SizeDOWN = false;
             timer = 0.1f;
             SizeChanger = GameObject.Find("tiny sizer (1)");
             SizeChanger.GetComponent<Transform>().parent = null;
@@ -78,8 +83,16 @@ namespace GorillaGoSmallGorillaGoBig
             var SizeChangeFile = new ConfigFile(Path.Combine(Paths.ConfigPath, "GorillaGoSmall.cfg"), true);
             Size = SizeChangeFile.Bind("Configuration", "Size", 0.1f, "What size do you want to be?, 0.1 is the normal small scale");
             inRoom = false;
-            SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(17.906f, 1.6123f, 18.0854f);
+            SizeChanger.transform.localScale = new Vector3(0, 0, 0);
             SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
+            var SizeChangers = Resources.FindObjectsOfTypeAll<Transform>().Where(obj => obj.name == "tiny sizer");
+
+            foreach(Transform SCS in SizeChangers)
+            {
+                SCS.localScale = Vector3.up * -4;
+            }
+            GameOpened = true;
+            GameOpenedTimer = 5;
         }
 
         private void Update()
@@ -89,28 +102,62 @@ namespace GorillaGoSmallGorillaGoBig
             list[0].TryGetFeatureValue(CommonUsages.secondaryButton, out BButton);
             list[0].TryGetFeatureValue(CommonUsages.primaryButton, out AButton);
 
-            if(AButton == true && BButton == false && inRoom == true)
-            {
-                SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
-                timer = 0.1f;
-                SizeDown = true;
-            }
-
-            if (AButton == false && BButton == true && inRoom == true)
-            {
-                SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(9999, 9999, 9999);
-                SizeChanger.GetComponent<SizeChanger>().minScale = Size.Value;
-            }
-
-            if(SizeDown == true)
+            if(SizeDOWN == true)
             {
                 timer -= Time.deltaTime;
 
                 if(timer < 0)
                 {
+                    SizeChanger.transform.localScale = new Vector3(0, 0, 0);
                     timer = 0.1f;
-                    SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(17.906f, 1.6123f, 18.0854f);
-                    SizeDown = false;
+                    SizeDOWN = false;
+                }
+            }
+
+            if(AButton == true && BButton == false && inRoom == true)
+            {
+                Debug.Log("Pressing A Button");
+                SizeDOWN = true;
+                SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
+                timer = 0.1f;
+            }
+
+            if (AButton == false && BButton == true && inRoom == true)
+            {
+                Debug.Log("Pressing B Button");
+                SizeDOWN = false;
+                SizeChanger.transform.localScale = new Vector3(9999, 9999, 9999);
+                SizeChanger.GetComponent<SizeChanger>().minScale = Size.Value;
+            }
+
+            if (GameObject.Find("MazeSizeChangers").activeSelf == true)
+            {
+                if (GameLoaded == true)
+                {
+                    SizeChanger.SetActive(false);
+                }
+            }
+            else if (GameObject.Find("MazeSizeChangers").activeSelf == false)
+            {
+                if (GameLoaded == true)
+                {
+                    SizeChanger.SetActive(true);
+                }
+            }
+
+            if(GameOpened == true)
+            {
+                GameOpenedTimer -= Time.deltaTime;
+
+                if(GameOpenedTimer < 0)
+                {
+                    SizeChanger.SetActive(true);
+                    SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
+                    timer = 0.1f;
+                    SizeDOWN = true;
+                    GameLoaded = true;
+                    GameOpenedTimer = 1;
+                    GameOpened = false;
                 }
             }
         }
@@ -121,8 +168,7 @@ namespace GorillaGoSmallGorillaGoBig
             if(IsEnabled == true)
             {
                 //ScaleChange.SetScale(Size.Value, true);
-                SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(9999, 9999, 9999);
-                SizeChanger.GetComponent<SizeChanger>().minScale = Size.Value;
+                SizeChanger.SetActive(true);
                 inRoom = true;
             }
         }
@@ -133,7 +179,7 @@ namespace GorillaGoSmallGorillaGoBig
             inRoom = false;
             SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
             timer = 0.1f;
-            SizeDown = true;
+            SizeDOWN = true;
             ScaleChange.SetScale(1f, false);
         }
 
