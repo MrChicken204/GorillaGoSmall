@@ -42,14 +42,12 @@ namespace GorillaGoSmallGorillaGoBig
             if (inRoom == true)
             {
                 SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(9999, 9999, 9999);
-                Player.GetComponent<SizeManager>().currentSizeLayerMaskValue = 2;
                 SizeChanger.GetComponent<SizeChanger>().minScale = Size.Value;
                 //ScaleChange.SetScale(Size.Value, true);
             }
             else
             {
                 SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(17.906f, 1.6123f, 18.0854f);
-                Player.GetComponent<SizeManager>().currentSizeLayerMaskValue = 1;
                 SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
                 //ScaleChange.SetScale(1f, false);
             }
@@ -65,8 +63,8 @@ namespace GorillaGoSmallGorillaGoBig
         }
 
         private void OnGameInitialized(object sender, EventArgs e)
-        {
-            SizeChanger = GameObject.Find("OuterTinySizer (1)");
+        {   //Hopefully Fixed
+            SizeChanger = GameObject.Find("tiny sizer (1)");
             SizeChanger.GetComponent<Transform>().parent = null;
             Player = GameObject.Find("GorillaPlayer");
             //ScaleChange.SetScale(1f, false);
@@ -74,7 +72,6 @@ namespace GorillaGoSmallGorillaGoBig
             Size = SizeChangeFile.Bind("Configuration", "Size", 0.1f, "What size do you want to be?, 0.1 is the normal small scale");
             inRoom = false;
             SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(17.906f, 1.6123f, 18.0854f);
-            Player.GetComponent<SizeManager>().currentSizeLayerMaskValue = 1;
             SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
         }
 
@@ -87,15 +84,13 @@ namespace GorillaGoSmallGorillaGoBig
 
             if(AButton == true && BButton == false && inRoom == true)
             {
-                SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(9999, 9999, 9999);
-                Player.GetComponent<SizeManager>().currentSizeLayerMaskValue = 1;
-                SizeChanger.GetComponent<SizeChanger>().minScale = 0.1f;
+                SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(17.906f, 1.6123f, 18.0854f);
+                SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
             }
 
             if (AButton == false && BButton == true && inRoom == true)
             {
                 SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(9999, 9999, 9999);
-                Player.GetComponent<SizeManager>().currentSizeLayerMaskValue = 2;
                 SizeChanger.GetComponent<SizeChanger>().minScale = Size.Value;
             }
         }
@@ -107,7 +102,6 @@ namespace GorillaGoSmallGorillaGoBig
             {
                 //ScaleChange.SetScale(Size.Value, true);
                 SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(9999, 9999, 9999);
-                Player.GetComponent<SizeManager>().currentSizeLayerMaskValue = 2;
                 SizeChanger.GetComponent<SizeChanger>().minScale = Size.Value;
                 inRoom = true;
             }
@@ -118,7 +112,6 @@ namespace GorillaGoSmallGorillaGoBig
         {
             inRoom = false;
             SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(17.906f, 1.6123f, 18.0854f);
-            Player.GetComponent<SizeManager>().currentSizeLayerMaskValue = 1;
             SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
             //ScaleChange.SetScale(1f, false);
         }
