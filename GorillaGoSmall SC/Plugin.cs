@@ -33,6 +33,7 @@ namespace GorillaGoSmallGorillaGoBig
             //ScaleChange.SetScale(1f, false);
             Instance = this;
             Events.GameInitialized += OnGameInitialized;
+            ScaleChange.SetScale(1f, false);
         }
 
         private void OnEnable()
@@ -49,6 +50,7 @@ namespace GorillaGoSmallGorillaGoBig
             {
                 SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(17.906f, 1.6123f, 18.0854f);
                 SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
+                ScaleChange.SetScale(1f, false);
                 //ScaleChange.SetScale(1f, false);
             }
         }
@@ -57,6 +59,7 @@ namespace GorillaGoSmallGorillaGoBig
         {
             SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(17.906f, 1.6123f, 18.0854f);
             SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
+            ScaleChange.SetScale(1f, false);
             HarmonyPatches.RemoveHarmonyPatches();
             IsEnabled = false;
             //ScaleChange.SetScale(1f, false);
@@ -73,6 +76,7 @@ namespace GorillaGoSmallGorillaGoBig
             inRoom = false;
             SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(17.906f, 1.6123f, 18.0854f);
             SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
+            ScaleChange.SetScale(1f, false);
         }
 
         private void Update()
@@ -82,13 +86,14 @@ namespace GorillaGoSmallGorillaGoBig
             list[0].TryGetFeatureValue(CommonUsages.secondaryButton, out BButton);
             list[0].TryGetFeatureValue(CommonUsages.primaryButton, out AButton);
 
-            if(AButton == true && BButton == false && inRoom == true)
+            if(AButton == true && BButton == false /*/&& inRoom == true/*/)
             {
                 SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(17.906f, 1.6123f, 18.0854f);
                 SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
+                ScaleChange.SetScale(1f, false);
             }
 
-            if (AButton == false && BButton == true && inRoom == true)
+            if (AButton == false && BButton == true /*/&& inRoom == true/*/)
             {
                 SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(9999, 9999, 9999);
                 SizeChanger.GetComponent<SizeChanger>().minScale = Size.Value;
@@ -113,7 +118,7 @@ namespace GorillaGoSmallGorillaGoBig
             inRoom = false;
             SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(17.906f, 1.6123f, 18.0854f);
             SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
-            //ScaleChange.SetScale(1f, false);
+            ScaleChange.SetScale(1f, false);
         }
 
         public bool IsEnabled;
