@@ -1,26 +1,25 @@
-using System;
-using System.ComponentModel;
-using System.IO;
 using BepInEx;
 using BepInEx.Configuration;
-using Utilla;
-using GorillaGoSmallGorillaGoBig.Scripts;
-using UnityEngine;
+using Bepinject;
+using System;
 using System.Collections.Generic;
-using UnityEngine.XR;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
-using Zenject.Asteroids;
+using UnityEngine;
+using UnityEngine.XR;
+using Utilla;
 
 namespace GorillaGoSmallGorillaGoBig
 {
     [ModdedGamemode]
     [BepInDependency("org.legoandmars.gorillatag.utilla", "1.6.7")]
+    [BepInDependency("tonimacaroni.computerinterface", "1.5.4")]
     [Description("HauntedModMenu")]
     [BepInPlugin(PluginInfo.GUID, PluginInfo.Name, PluginInfo.Version)]
     public class Plugin : BaseUnityPlugin
     {
         private GameObject SizeChanger;
-        public ScaleChange ScaleChange { get; private set; }
         public static Plugin Instance { get; private set; }
 
         //Button
@@ -33,14 +32,20 @@ namespace GorillaGoSmallGorillaGoBig
         private float GameOpenedTimer;
         private bool GameLoaded;
 
+
+
+        private bool IsTestingVersion = false;
+
         internal void Start()
         {
-            Events.GameInitialized += this.OnGameInitialized;
+            Events.GameInitialized += OnGameInitialized;
             //ScaleChange = new ScaleChange();
             //ScaleChange.SetScale(1f, false);
             Instance = this;
             Events.GameInitialized += OnGameInitialized;
-            ScaleChange.SetScale(1f, false);
+
+            // Inject the installer
+            Zenjector.Install<UI.MainInstaller>().OnProject();
         }
 
         private void OnEnable()
@@ -49,48 +54,33 @@ namespace GorillaGoSmallGorillaGoBig
             IsEnabled = true;
             if (inRoom == true)
             {
-                SizeChanger.GetComponent<Transform>().transform.localScale = new Vector3(9999, 9999, 9999);
-                SizeChanger.GetComponent<SizeChanger>().minScale = Size.Value;
+                SizeChanger.transform.localScale = new Vector3(999999, 99999, 999999);
+                SizeChanger.GetComponent<SizeChanger>().minScale = Size;
                 //ScaleChange.SetScale(Size.Value, true);
-            }
-            else
-            {
-                SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
-                timer = 0.1f;
-                SizeDOWN = true;
-                //ScaleChange.SetScale(1f, false);
             }
         }
 
         private void OnDisable()
         {
-            this.enabled = true;
+            enabled = true;
             SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
-            SizeChanger.transform.localScale = new Vector3(0, 0, 0);
-            timer = 0.1f;
+            timer = 0.5f;
             SizeDOWN = true;
             HarmonyPatches.RemoveHarmonyPatches();
             IsEnabled = false;
         }
 
         private void OnGameInitialized(object sender, EventArgs e)
-        {   //Hopefully Fixed
+        {
+            Size = 0.1f;
             SizeDOWN = false;
             timer = 0.1f;
-            SizeChanger = GameObject.Find("tiny sizer (1)");
+            SizeChanger = GameObject.Find("OuterTinySizer (1)");
             SizeChanger.GetComponent<Transform>().parent = null;
             Player = GameObject.Find("GorillaPlayer");
-            var SizeChangeFile = new ConfigFile(Path.Combine(Paths.ConfigPath, "GorillaGoSmall.cfg"), true);
-            Size = SizeChangeFile.Bind("Configuration", "Size", 0.1f, "What size do you want to be?, 0.1 is the normal small scale");
             inRoom = false;
-            SizeChanger.transform.localScale = new Vector3(0, 0, 0);
+            SizeChanger.GetComponent<SizeChanger>().affectLayerA = true;
             SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
-            var SizeChangers = Resources.FindObjectsOfTypeAll<Transform>().Where(obj => obj.name == "tiny sizer");
-
-            foreach(Transform SCS in SizeChangers)
-            {
-                SCS.localScale = Vector3.up * -4;
-            }
             GameOpened = true;
             GameOpenedTimer = 5;
         }
@@ -101,55 +91,67 @@ namespace GorillaGoSmallGorillaGoBig
             InputDevices.GetDevicesWithCharacteristics(UnityEngine.XR.InputDeviceCharacteristics.HeldInHand | UnityEngine.XR.InputDeviceCharacteristics.Right | UnityEngine.XR.InputDeviceCharacteristics.Controller, list);
             list[0].TryGetFeatureValue(CommonUsages.secondaryButton, out BButton);
             list[0].TryGetFeatureValue(CommonUsages.primaryButton, out AButton);
+            SizeChanger.GetComponent<SizeChanger>().affectLayerA = true;
 
-            if(SizeDOWN == true)
+            if (Size < 0.1)
+            {
+                Size += 0.1f;
+            }
+            if (Size > 25)
+            {
+                Size -= 0.1f;
+            }
+
+            if (SizeDOWN == true)
             {
                 timer -= Time.deltaTime;
 
-                if(timer < 0)
+                if (timer < 0)
                 {
                     SizeChanger.transform.localScale = new Vector3(0, 0, 0);
+                    SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
                     timer = 0.1f;
                     SizeDOWN = false;
                 }
             }
 
-            if(AButton == true && BButton == false && inRoom == true)
+            if (AButton == true && BButton == false && inRoom == true)
             {
-                Debug.Log("Pressing A Button");
-                SizeDOWN = true;
                 SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
-                timer = 0.1f;
+                SizeDOWN = true;
+                timer = 0.5f;
             }
 
             if (AButton == false && BButton == true && inRoom == true)
             {
-                Debug.Log("Pressing B Button");
+                SizeChanger.GetComponent<SizeChanger>().affectLayerA = true;
                 SizeDOWN = false;
-                SizeChanger.transform.localScale = new Vector3(9999, 9999, 9999);
-                SizeChanger.GetComponent<SizeChanger>().minScale = Size.Value;
+                timer = 0.1f;
+                SizeChanger.transform.localScale = new Vector3(99999, 999999, 999999);
+                SizeChanger.GetComponent<SizeChanger>().minScale = Size;
             }
 
-            if (GameObject.Find("MazeSizeChangers").activeSelf == true)
+            if (AButton == true && BButton == false && IsTestingVersion == true)
             {
-                if (GameLoaded == true)
-                {
-                    SizeChanger.SetActive(false);
-                }
-            }
-            else if (GameObject.Find("MazeSizeChangers").activeSelf == false)
-            {
-                if (GameLoaded == true)
-                {
-                    SizeChanger.SetActive(true);
-                }
+                SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
+                SizeDOWN = true;
+                timer = 0.5f;
             }
 
-            if(GameOpened == true)
+            if (AButton == false && BButton == true && IsTestingVersion == true)
+            {
+                SizeChanger.GetComponent<SizeChanger>().affectLayerA = true;
+                SizeDOWN = false;
+                timer = 0.1f;
+                SizeChanger.transform.localScale = new Vector3(99999, 999999, 999999);
+                SizeChanger.GetComponent<SizeChanger>().minScale = Size;
+            }
+
+            if (GameOpened == true)
             {
                 GameOpenedTimer -= Time.deltaTime;
 
-                if(GameOpenedTimer < 0)
+                if (GameOpenedTimer < 0)
                 {
                     SizeChanger.SetActive(true);
                     SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
@@ -165,9 +167,12 @@ namespace GorillaGoSmallGorillaGoBig
         [ModdedGamemodeJoin]
         public void OnJoin(string gamemode)
         {
-            if(IsEnabled == true)
+            if (IsEnabled == true)
             {
                 //ScaleChange.SetScale(Size.Value, true);
+                SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
+                SizeDOWN = true;
+                timer = 0.5f;
                 SizeChanger.SetActive(true);
                 inRoom = true;
             }
@@ -178,15 +183,17 @@ namespace GorillaGoSmallGorillaGoBig
         {
             inRoom = false;
             SizeChanger.GetComponent<SizeChanger>().minScale = 0.03f;
-            timer = 0.1f;
             SizeDOWN = true;
-            ScaleChange.SetScale(1f, false);
+            SizeChanger.GetComponent<SizeChanger>().affectLayerA = false;
+            timer = 0.1f;
+            //timer = 0.1f;
+            //SizeDOWN = true;
         }
 
         public bool IsEnabled;
 
         public bool inRoom = false;
 
-        public static ConfigEntry<float> Size;
+        public static float Size = 0.1f;
     }
 }
