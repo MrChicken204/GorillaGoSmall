@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "LJYtDYN+lj9YpQcaR2YRaHtjlGEm8WbNeRTVM1SLFLIVgyRa79cJbmHlivOs4JxlJiKjsKxCmLsTWT/ABuXO6A==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\logan\\source\\repos\\GorillaGoSmallGorillaGoBig\\GorillaGoSmallGorillaGoBig\\GorillaGoSmallGorillaGoBig.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\logan\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\logan\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
