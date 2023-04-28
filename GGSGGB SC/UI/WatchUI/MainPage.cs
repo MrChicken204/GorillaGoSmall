@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using GorillaGoSmallGorillaGoBig.main;
 using MonkeStatistics.API;
 
@@ -35,12 +35,13 @@ namespace GorillaGoSmallGorillaGoBig.Scripts.mainmenu
 
         private void Build()
         {
-            AddLine("[ENABLED]", new ButtonInfo(OnEnablePress, 0, ButtonInfo.ButtonType.Toggle, Plugin.Instance.Enabled));
-            AddLine(1);
-            AddLine("SIZE:" + Plugin.Instance.Size);
-            AddLine(1);
             AddLine("SIZE[+]", new ButtonInfo(OnSizeHChange, 1, ButtonInfo.ButtonType.Press));
             AddLine("SIZE[-]", new ButtonInfo(OnSizeLChange, -1, ButtonInfo.ButtonType.Press));
+            AddLine(1);
+            AddLine("[ENABLED]", new ButtonInfo(OnEnablePress, 0, ButtonInfo.ButtonType.Toggle, Plugin.Instance.Enabled));
+            AddLine(1);
+            AddLine("Output:");
+            AddLine("SIZE:" + Plugin.Instance.Size);
         }
         public void OnEnablePress(object Sender, object[] Args)
         {
